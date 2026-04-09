@@ -1,0 +1,117 @@
+{
+  "title": "Технология оптимальных решений",
+  "crop": "Озимая пшеница",
+  "seasons": [
+    {
+      "name": "Перед посевом",
+      "treatments": [
+        {
+          "num": 1,
+          "phase": "до посева",
+          "products": [
+            {"name": "NPK(S) (5:17:36:2)", "rate": 200, "unit": "кг/га", "category": "удобрение", "price_per_unit": 32},
+            {"name": "Поларис Кватро", "rate": 1.5, "unit": "л/т семян", "category": "протравитель", "rate_basis": "seed", "price_per_unit": 4200},
+            {"name": "Биостим Старт", "rate": 1.0, "unit": "л/т семян", "category": "биостимулятор", "rate_basis": "seed", "price_per_unit": 850},
+            {"name": "Гумат калия", "rate": 0.7, "unit": "л/т семян", "category": "биостимулятор", "rate_basis": "seed", "price_per_unit": 350}
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Осень",
+      "treatments": [
+        {
+          "num": 2,
+          "phase": "13–14 (кущение)",
+          "products": [
+            {"name": "Костандо", "rate": 0.2, "unit": "л/га", "category": "гербицид", "price_per_unit": 5800},
+            {"name": "Азофок", "rate": 2.0, "unit": "л/га", "category": "удобрение", "price_per_unit": 420},
+            {"name": "Ультрамаг Молибден", "rate": 0.9, "unit": "л/га", "category": "микроудобрение", "price_per_unit": 1200}
+          ]
+        },
+        {
+          "num": 3,
+          "phase": "24 (кущение)",
+          "products": [
+            {"name": "Беназол", "rate": 0.6, "unit": "л/га", "category": "фунгицид", "price_per_unit": 1350}
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Весенние обработки",
+      "treatments": [
+        {
+          "num": null,
+          "phase": "ВВВВ",
+          "products": [
+            {"name": "Аммиачная селитра", "rate": 150, "unit": "кг/га", "category": "удобрение", "price_per_unit": 18}
+          ]
+        },
+        {
+          "num": 4,
+          "phase": "25 (кущение)",
+          "products": [
+            {"name": "Азорро", "rate": 1.0, "unit": "л/га", "category": "гербицид", "price_per_unit": 2800},
+            {"name": "Ультрамаг Фосфор Супер", "rate": 2.0, "unit": "л/га", "category": "микроудобрение", "price_per_unit": 780},
+            {"name": "Гумат калия Суфлер", "rate": 0.3, "unit": "л/га", "category": "биостимулятор", "price_per_unit": 350}
+          ]
+        },
+        {
+          "num": 5,
+          "phase": "27–29 (выход в трубку)",
+          "products": [
+            {"name": "Пиксель", "rate": 0.3, "unit": "л/га", "category": "регулятор роста", "price_per_unit": 6200},
+            {"name": "Азофок", "rate": 2.0, "unit": "л/га", "category": "удобрение", "price_per_unit": 420},
+            {"name": "Ультрамаг Комби для зерновых", "rate": 2.0, "unit": "л/га", "category": "микроудобрение", "price_per_unit": 650}
+          ]
+        },
+        {
+          "num": null,
+          "phase": "31 (1-й узел)",
+          "products": [
+            {"name": "Аммиачная селитра", "rate": 150, "unit": "кг/га", "category": "удобрение", "price_per_unit": 18}
+          ]
+        },
+        {
+          "num": 6,
+          "phase": "31 (1-й узел)",
+          "products": [
+            {"name": "Костандо", "rate": 0.4, "unit": "л/га", "category": "гербицид", "price_per_unit": 5800},
+            {"name": "Биостим Зерновой", "rate": 2.0, "unit": "л/га", "category": "биостимулятор", "price_per_unit": 850},
+            {"name": "Арго Прим", "rate": 0.5, "unit": "л/га", "category": "фунгицид", "price_per_unit": 3600},
+            {"name": "Фаскорд", "rate": 0.15, "unit": "л/га", "category": "инсектицид", "price_per_unit": 2400}
+          ]
+        },
+        {
+          "num": 7,
+          "phase": "39 (флаг-лист)",
+          "products": [
+            {"name": "Триада", "rate": 0.6, "unit": "л/га", "category": "фунгицид", "price_per_unit": 2800},
+            {"name": "Биостим Универсал", "rate": 0.5, "unit": "л/га", "category": "биостимулятор", "price_per_unit": 850},
+            {"name": "Гумат калия Суфлер", "rate": 0.5, "unit": "л/га", "category": "биостимулятор", "price_per_unit": 350},
+            {"name": "Фаскорд", "rate": 0.15, "unit": "л/га", "category": "инсектицид", "price_per_unit": 2400}
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Летние обработки",
+      "treatments": [
+        {
+          "num": 8,
+          "phase": "53–57 (колошение)",
+          "products": [
+            {"name": "Карбамид", "rate": 20, "unit": "кг/га", "category": "удобрение", "price_per_unit": 22},
+            {"name": "Эйс", "rate": 1.0, "unit": "л/га", "category": "фунгицид", "price_per_unit": 3200},
+            {"name": "Ультрамаг Фосфор Супер", "rate": 2.0, "unit": "л/га", "category": "микроудобрение", "price_per_unit": 780},
+            {"name": "Ультрамаг Сера 900", "rate": 2.0, "unit": "л/га", "category": "микроудобрение", "price_per_unit": 580},
+            {"name": "Эсперо", "rate": 0.1, "unit": "л/га", "category": "инсектицид", "price_per_unit": 4800}
+          ]
+        }
+      ]
+    }
+  ],
+  "seeding_rate_kg_per_ha": 220,
+  "seeding_rate_comment": "Норма высева 220 кг/га (ориентировочная, зависит от региона и сорта)"
+}

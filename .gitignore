@@ -1,1 +1,5 @@
 /README.md
+test_input.xlsx
+test_output.pdf
+*.pdf
+!input_template.xlsx

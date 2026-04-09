@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pip install:*)",
+      "Bash(python3:*)",
+      "Bash(where python:*)",
+      "Bash(py:*)",
+      "Bash(/c/Users/skile/AppData/Local/Programs/Python/Python311/python.exe -m pip install python-docx)",
+      "Bash(/c/Users/skile/AppData/Local/Programs/Python/Python311/python.exe:*)",
+      "Bash(pip list:*)",
+      "Bash(python create_template.py)",
+      "Bash(python -c ':*)",
+      "Bash(python generate.py test_input.xlsx -o test_output.pdf)",
+      "WebFetch(domain:x.com)",
+      "WebFetch(domain:nitter.net)",
+      "WebFetch(domain:xcancel.com)",
+      "WebFetch(domain:fixupx.com)",
+      "WebSearch",
+      "Bash(mv varieties.json ref/varieties.json)",
+      "Bash(mv technology.json ref/technology.json)",
+      "Bash(cp base/base.txt ref_obs/raw/base_requirements.txt)",
+      "Bash(cp ref/varieties.json ref_obs/raw/varieties_source.json)",
+      "Bash(cp ref/technology.json ref_obs/raw/technology_source.json)",
+      "Bash(python generate.py _verify.xlsx -o _verify.pdf)",
+      "Bash(rm _verify.xlsx _verify.pdf)",
+      "Bash(python generate.py _test_multi.xlsx -o _test_multi.pdf)"
+    ]
+  }
+}
