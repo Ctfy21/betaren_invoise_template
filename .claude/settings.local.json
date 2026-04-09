@@ -23,7 +23,14 @@
       "Bash(cp ref/technology.json ref_obs/raw/technology_source.json)",
       "Bash(python generate.py _verify.xlsx -o _verify.pdf)",
       "Bash(rm _verify.xlsx _verify.pdf)",
-      "Bash(python generate.py _test_multi.xlsx -o _test_multi.pdf)"
+      "Bash(python generate.py _test_multi.xlsx -o _test_multi.pdf)",
+      "Bash(python generate.py test_quality.json -o test_quality.pdf)",
+      "Bash(ls:*)",
+      "Bash(cp extracted_p1_img1.png logo.png)",
+      "Bash(cp extracted_p1_img2.png team-photo.png)",
+      "Bash(cp extracted_p2_img1.png logo-small.png)",
+      "Bash(cp extracted_p2_img2.png stamp.png)",
+      "Bash(rm extracted_p1_img1.png extracted_p1_img2.png extracted_p2_img1.png extracted_p2_img2.png)"
     ]
   }
 }
