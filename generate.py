@@ -1,10 +1,13 @@
 """
 Генератор коммерческих предложений.
-Один XLSX = один клиент с несколькими сортами = один PDF.
+
+Принимает input.json или input.xlsx, рассчитывает объёмы и стоимость,
+генерирует data.json и компилирует PDF через Typst.
 
 Использование:
+    python generate.py input.json
     python generate.py input.xlsx
-    python generate.py input.xlsx -o КП_Нива.pdf
+    python generate.py input.json -o КП_Нива.pdf
 """
 
 import argparse
@@ -13,24 +16,93 @@ import subprocess
 import sys
 from pathlib import Path
 
-from openpyxl import load_workbook
-
 ROOT = Path(__file__).parent
-DATA_START_ROW = 13  # первая строка данных в таблице сортов
+DATA_START_ROW = 13  # первая строка данных в XLSX таблице сортов
+
+PAIN_MAP = {"засуха": "засуха", "болезни": "болезни", "качество": "качество"}
 
 
-# ── Чтение XLSX ──
+# ══════════════════════════════════════════════════════════════
+# Чтение входных данных
+# ══════════════════════════════════════════════════════════════
 
-def read_input(xlsx_path: str) -> dict:
+def read_json_input(path: str) -> dict:
+    """
+    Читает input.json — минимальный формат для AI/скрипта.
+
+    Схема input.json:
+    {
+      "client_name": "ООО Нива",
+      "region": "Оренбургская область",
+      "client_email": "",          // опционально
+      "client_phone": "",          // опционально
+      "manager_name": "",          // опционально
+      "manager_email": "",         // опционально
+      "manager_phone": "",         // опционально
+      "entries": [
+        {"variety": "ДФ 2020", "area_ha": 1000, "pain": "Засуха"},
+        {"variety": "Володя",  "area_ha": 500,  "pain": "Качество"}
+      ]
+    }
+    """
+    with open(path, "r", encoding="utf-8") as f:
+        raw = json.load(f)
+
+    # Валидация
+    for field in ("client_name", "region", "entries"):
+        if field not in raw or not raw[field]:
+            print(f"ОШИБКА: отсутствует обязательное поле '{field}' в input.json")
+            sys.exit(1)
+
+    entries = []
+    for i, e in enumerate(raw["entries"], 1):
+        variety = str(e.get("variety", "")).strip()
+        if not variety:
+            print(f"ОШИБКА: entries[{i}]: нет сорта")
+            sys.exit(1)
+
+        try:
+            area = float(str(e.get("area_ha", "")).replace(" ", "").replace(",", "."))
+        except (ValueError, TypeError):
+            print(f"ОШИБКА: entries[{i}]: площадь не число ({e.get('area_ha')})")
+            sys.exit(1)
+
+        pain_str = str(e.get("pain", "")).strip().lower()
+        if pain_str not in PAIN_MAP:
+            print(f"ОШИБКА: entries[{i}]: неизвестная боль '{e.get('pain')}'. Допустимо: Засуха, Болезни, Качество")
+            sys.exit(1)
+
+        entries.append({
+            "variety": variety,
+            "area_ha": area,
+            "pain": PAIN_MAP[pain_str],
+        })
+
+    return {
+        "header": {
+            "client_name": str(raw["client_name"]).strip(),
+            "region": str(raw["region"]).strip(),
+            "client_email": str(raw.get("client_email", "") or ""),
+            "client_phone": str(raw.get("client_phone", "") or ""),
+            "manager_name": str(raw.get("manager_name", "") or ""),
+            "manager_email": str(raw.get("manager_email", "") or ""),
+            "manager_phone": str(raw.get("manager_phone", "") or ""),
+        },
+        "entries": entries,
+    }
+
+
+def read_xlsx_input(path: str) -> dict:
     """Читает XLSX: шапку (клиент + менеджер) и таблицу сортов."""
-    wb = load_workbook(xlsx_path, data_only=True)
+    from openpyxl import load_workbook
+
+    wb = load_workbook(path, data_only=True)
     ws = wb.active
 
     def cell(r, c):
         v = ws.cell(row=r, column=c).value
         return str(v).strip() if v is not None else ""
 
-    # Шапка
     header = {
         "client_name": cell(3, 2),
         "region": cell(4, 2),
@@ -48,7 +120,6 @@ def read_input(xlsx_path: str) -> dict:
         print("ОШИБКА: не заполнен регион (B4)")
         sys.exit(1)
 
-    # Таблица сортов
     entries = []
     for row_idx in range(DATA_START_ROW, ws.max_row + 1):
         variety = ws.cell(row=row_idx, column=2).value
@@ -58,24 +129,21 @@ def read_input(xlsx_path: str) -> dict:
         area_raw = ws.cell(row=row_idx, column=3).value
         pain_raw = ws.cell(row=row_idx, column=4).value
 
-        # Площадь
         try:
             area = float(str(area_raw).replace(" ", "").replace(",", "."))
         except (ValueError, TypeError):
             print(f"ОШИБКА: строка {row_idx}: площадь не число ({area_raw})")
             sys.exit(1)
 
-        # Боль
-        pain_map = {"засуха": "засуха", "болезни": "болезни", "качество": "качество"}
         pain_str = str(pain_raw or "").strip().lower()
-        if pain_str not in pain_map:
+        if pain_str not in PAIN_MAP:
             print(f"ОШИБКА: строка {row_idx}: неизвестная боль ({pain_raw})")
             sys.exit(1)
 
         entries.append({
             "variety": str(variety).strip(),
             "area_ha": area,
-            "pain": pain_map[pain_str],
+            "pain": PAIN_MAP[pain_str],
         })
 
     if not entries:
@@ -85,7 +153,21 @@ def read_input(xlsx_path: str) -> dict:
     return {"header": header, "entries": entries}
 
 
-# ── Справочники ──
+def read_input(path: str) -> dict:
+    """Автоопределение формата по расширению: .json или .xlsx"""
+    p = Path(path)
+    if p.suffix.lower() == ".json":
+        return read_json_input(path)
+    elif p.suffix.lower() == ".xlsx":
+        return read_xlsx_input(path)
+    else:
+        print(f"ОШИБКА: неподдерживаемый формат '{p.suffix}'. Используйте .json или .xlsx")
+        sys.exit(1)
+
+
+# ══════════════════════════════════════════════════════════════
+# Справочники
+# ══════════════════════════════════════════════════════════════
 
 def load_varieties() -> dict:
     with open(ROOT / "ref" / "varieties.json", "r", encoding="utf-8") as f:
@@ -97,7 +179,9 @@ def load_technology() -> dict:
         return json.load(f)
 
 
-# ── Расчёт ──
+# ══════════════════════════════════════════════════════════════
+# Расчёт
+# ══════════════════════════════════════════════════════════════
 
 def calculate_volumes(tech: dict, area_ha: float) -> dict:
     seeding_rate = tech["seeding_rate_kg_per_ha"]
@@ -162,6 +246,7 @@ def build_data(input_data: dict) -> dict:
     all_varieties = load_varieties()
     tech = load_technology()
 
+    available = ", ".join(all_varieties.keys())
     entries = []
     total_area = 0
     total_cost = 0
@@ -169,7 +254,7 @@ def build_data(input_data: dict) -> dict:
     for e in input_data["entries"]:
         vname = e["variety"]
         if vname not in all_varieties:
-            print(f"ОШИБКА: сорт '{vname}' не найден. Доступные: {', '.join(all_varieties.keys())}")
+            print(f"ОШИБКА: сорт '{vname}' не найден. Доступные: {available}")
             sys.exit(1)
 
         v = all_varieties[vname]
@@ -226,11 +311,13 @@ def build_data(input_data: dict) -> dict:
     }
 
 
-# ── Main ──
+# ══════════════════════════════════════════════════════════════
+# Main
+# ══════════════════════════════════════════════════════════════
 
 def main():
-    parser = argparse.ArgumentParser(description="Генератор КП")
-    parser.add_argument("input", help="Путь к заполненному XLSX")
+    parser = argparse.ArgumentParser(description="Генератор КП (input.json или input.xlsx)")
+    parser.add_argument("input", help="Путь к input.json или input.xlsx")
     parser.add_argument("-o", "--output", default=None, help="Имя выходного PDF")
     args = parser.parse_args()
 

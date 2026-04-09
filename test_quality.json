@@ -1,0 +1,14 @@
+{
+  "client_name": "ООО «Агро-Союз»",
+  "region": "Оренбургская область",
+  "client_email": "agro@mail.ru",
+  "client_phone": "+7 (353) 200-10-20",
+  "manager_name": "Петров Пётр Петрович",
+  "manager_email": "petrov@betaren.ru",
+  "manager_phone": "+7 (495) 777-84-89",
+  "entries": [
+    {"variety": "ДФ 2020", "area_ha": 1200, "pain": "Засуха"},
+    {"variety": "Изумруд Дубовицкого", "area_ha": 800, "pain": "Качество"},
+    {"variety": "Володя", "area_ha": 500, "pain": "Болезни"}
+  ]
+}
