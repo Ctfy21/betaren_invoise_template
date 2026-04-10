@@ -352,12 +352,12 @@ python generate.py filled_template.xlsx
 
 ### Настройка
 
-Бот-токен и chat_id хранятся в переменных окружения или передаются продажником:
+Бот-токен и chat_id:
 
-| Параметр | Переменная окружения | Описание |
-|----------|---------------------|----------|
-| Токен бота | `TELEGRAM_BOT_TOKEN` | Токен от @BotFather |
-| Chat ID | `TELEGRAM_CHAT_ID` | ID чата для отправки (по умолчанию) |
+| Параметр | Где взять | Описание |
+|----------|----------|----------|
+| Токен бота | `cat /root/.openclaw/openclaw.json \| python3 -c "import sys,json; print(json.load(sys.stdin)['telegram']['botToken'])"` | Токен от @BotFather |
+| Chat ID | Из контекста входящего сообщения (поле `chat_id`) | ID чата для отправки |
 
 ### Отправка файла
 

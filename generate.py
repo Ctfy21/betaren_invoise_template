@@ -240,7 +240,7 @@ def calculate_volumes(tech: dict, area_ha: float) -> dict:
     }
 
 
-def build_data(input_data: dict) -> dict:
+def build_data(input_data: dict, seeds_only: bool = False) -> dict:
     """Собирает полный data.json с массивом entries."""
     header = input_data["header"]
     all_varieties = load_varieties()
@@ -260,8 +260,25 @@ def build_data(input_data: dict) -> dict:
         v = all_varieties[vname]
         area = e["area_ha"]
         pain = e["pain"]
-        calc = calculate_volumes(tech, area)
-        calc["seeds"]["variety"] = vname
+        if seeds_only:
+            # Только семена — без агрохимии
+            seeding_rate = tech["seeding_rate_kg_per_ha"]
+            seed_tonnes = round((area * seeding_rate) / 1000, 2)
+            seed_price = 25000
+            seed_cost = round(seed_tonnes * seed_price, 2)
+            calc = {
+                "seasons": [],
+                "seeds": {
+                    "variety": vname,
+                    "volume_tonnes": seed_tonnes,
+                    "price_per_tonne": seed_price,
+                    "cost": seed_cost,
+                },
+                "grand_total": seed_cost,
+            }
+        else:
+            calc = calculate_volumes(tech, area)
+            calc["seeds"]["variety"] = vname
 
         pain_argument = v.get("pain_arguments", {}).get(pain, "")
         resistance = [
@@ -319,6 +336,7 @@ def main():
     parser = argparse.ArgumentParser(description="Генератор КП (input.json или input.xlsx)")
     parser.add_argument("input", help="Путь к input.json или input.xlsx")
     parser.add_argument("-o", "--output", default=None, help="Имя выходного PDF")
+    parser.add_argument("--seeds-only", action="store_true", help="Только семена (без агрохимии), шаблон seeds.typ")
     args = parser.parse_args()
 
     input_path = Path(args.input)
@@ -335,8 +353,8 @@ def main():
     for e in input_data["entries"]:
         print(f"  - {e['variety']} | {e['area_ha']} га | {e['pain']}")
 
-    print("Рассчитываю...")
-    data = build_data(input_data)
+    print("Рассчитываю" + (" (только семена)..." if args.seeds_only else "..."))
+    data = build_data(input_data, seeds_only=args.seeds_only)
 
     data_path = ROOT / "data.json"
     with open(data_path, "w", encoding="utf-8") as f:
@@ -348,7 +366,7 @@ def main():
         output_name = f"КП_{client}.pdf"
 
     output_path = ROOT / output_name
-    typst_main = ROOT / "main.typ"
+    typst_main = ROOT / ("seeds.typ" if args.seeds_only else "main.typ")
 
     print(f"Компилирую -> {output_path}...")
     result = subprocess.run(
